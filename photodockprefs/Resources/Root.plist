@@ -35,14 +35,48 @@
 			<string>com.popsicletreehouse.photodockprefs</string>
 			<key>key</key>
 			<string>dockImage</string>
-			<key>PostNotification</key>
-			<string>com.popsicletreehouse.photodock.prefschanged</string>
 			<key>usesJPEG</key>
 			<true/>
 			<key>compressionQuality</key>
 			<real>1</real>
 			<key>allowsVideos</key>
 			<false/>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Blur</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.popsicletreehouse.photodockprefs</string>
+			<key>key</key>
+			<string>isBlurEnabled</string>
+			<key>label</key>
+			<string>Enable Blur</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<real>0</real>
+			<key>defaults</key>
+			<string>com.popsicletreehouse.photodockprefs</string>
+			<key>key</key>
+			<string>blurAlpha</string>
+			<key>min</key>
+			<real>0</real>
+			<key>max></key>
+			<real>1</real>
+			<key>showValue</key>
+			<true/>
+			<key>label</key>
+			<string>Dock blur intensity</string>
 		</dict>
 		<dict>
 			<key>cell</key>
