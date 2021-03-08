@@ -4,7 +4,6 @@ static void refreshPrefs() {
 	NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults]persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
 	isEnabled = [[bundleDefaults objectForKey:@"isEnabled"]boolValue];
 	dockImage = [[UIImage alloc] initWithData:[bundleDefaults valueForKey:@"dockImage"]];
-	blurType = [[bundleDefaults objectForKey:@"blurType"]intValue];
 	blurEnabled = [[bundleDefaults objectForKey:@"isBlurEnabled"]boolValue];
 	blurIntensity = [[bundleDefaults objectForKey:@"blurAlpha"]floatValue];
 }
@@ -27,16 +26,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 			[self.backgroundView addSubview: dockImageView];
 		}
 		if(blurEnabled) {
-			UIBlurEffect *blurEffect;
-			if(blurType == 0) {
-				blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
-			}
-			else if(blurType == 1) {
-				blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-			}
-			else {
-				blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-			}
+			UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
 			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
 			blurEffectView.frame = self.backgroundView.bounds;
 			blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
