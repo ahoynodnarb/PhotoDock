@@ -1,0 +1,9 @@
+Package: com.popsicletreehouse.photodock
+Name: PhotoDock
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Change your dock's background to a photo of your choice.
+Maintainer: PopsicleTreehouse
+Author: PopsicleTreehouse
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000), com.muirey03.libimagepicker
