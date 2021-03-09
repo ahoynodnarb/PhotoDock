@@ -2,9 +2,9 @@
 
 static void refreshPrefs() {
 	NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults]persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
-	isEnabled = [[bundleDefaults objectForKey:@"isEnabled"]boolValue];
-	dockImage = [[UIImage alloc] initWithData:[bundleDefaults valueForKey:@"dockImage"]];
-	blurEnabled = [[bundleDefaults objectForKey:@"isBlurEnabled"]boolValue];
+	isEnabled = [bundleDefaults objectForKey:@"isEnabled"] ? [[bundleDefaults objectForKey:@"isEnabled"]boolValue] : YES;
+	dockImage = [UIImage imageWithData:[bundleDefaults valueForKey:@"dockImage"]];
+	blurEnabled = [bundleDefaults objectForKey:@"isBlurEnabled"] ? [[bundleDefaults objectForKey:@"isBlurEnabled"]boolValue] : NO;
 	blurIntensity = [[bundleDefaults objectForKey:@"blurAlpha"]floatValue];
 }
 
@@ -15,25 +15,33 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 %hook SBDockView
 -(void)layoutSubviews {
 	%orig;
-	NSLog(@"isEnabled: %d", isEnabled);
 	if(isEnabled) {
-		if(dockImage) {
-			UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
-			dockImageView.frame = self.backgroundView.bounds;
-			[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		dockImageView = [[UIImageView alloc] initWithImage:dockImage];
+		[dockImageView setFrame: self.backgroundView.bounds];
+		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		if(dockImage.size.height < self.backgroundView.frame.size.height) {
 			[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
-			[dockImageView setClipsToBounds:YES];
-			[self.backgroundView addSubview: dockImageView];
+		}
+		else {
+			[dockImageView setContentMode:UIViewContentModeCenter];
 		}
 		if(blurEnabled) {
-			UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
-			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-			blurEffectView.frame = self.backgroundView.bounds;
-			blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-			[blurEffectView setTransform: self.backgroundView.transform];
+			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular]];
+			[blurEffectView setFrame: dockImageView.bounds];
+			[blurEffectView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+			[blurEffectView setContentMode:UIViewContentModeCenter];
 			blurEffectView.alpha = blurIntensity;
-			[self.backgroundView addSubview: blurEffectView];
+			[dockImageView addSubview: blurEffectView];
 		}
+		// backgroundView changed multiple times: lays subviews.
+		// we want the last one since it has the correct frame
+		if(self.backgroundView.subviews.count != 0) {
+			for(UIView *view in self.backgroundView.subviews) {
+				[view removeFromSuperview];
+			}
+			NSLog(@"photodock count: %lu", (unsigned long)self.backgroundView.subviews.count);
+		}
+		[self.backgroundView addSubview: dockImageView];
 	}
 }
 %end
