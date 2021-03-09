@@ -39,7 +39,6 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 			for(UIView *view in self.backgroundView.subviews) {
 				[view removeFromSuperview];
 			}
-			NSLog(@"photodock count: %lu", (unsigned long)self.backgroundView.subviews.count);
 		}
 		[self.backgroundView addSubview: dockImageView];
 	}
