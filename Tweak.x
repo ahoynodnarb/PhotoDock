@@ -19,12 +19,9 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 		dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: self.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		if(dockImage.size.height < self.backgroundView.frame.size.height) {
-			[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
-		}
-		else {
-			[dockImageView setContentMode:UIViewContentModeCenter];
-		}
+		[dockImageView setClipsToBounds: YES];
+		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
+		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
 		if(blurEnabled) {
 			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular]];
 			[blurEffectView setFrame: dockImageView.bounds];
