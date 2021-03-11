@@ -17,6 +17,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 -(void)layoutSubviews {
 	%orig;
 	if(isEnabled) {
+		[dockImageView removeFromSuperview];
 		dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: self.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -31,13 +32,6 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 			[blurEffectView setContentMode:UIViewContentModeCenter];
 			blurEffectView.alpha = blurIntensity;
 			[dockImageView addSubview: blurEffectView];
-		}
-		// backgroundView changed multiple times: lays subviews.
-		// we want the last one since it has the correct frame
-		if(self.backgroundView.subviews.count != 0) {
-			for(UIView *view in self.backgroundView.subviews) {
-				[view removeFromSuperview];
-			}
 		}
 		[self.backgroundView addSubview: dockImageView];
 	}
