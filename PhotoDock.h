@@ -10,4 +10,5 @@ BOOL isEnabled = YES;
 BOOL blurEnabled = NO;
 float blurIntensity = 1.0f;
 UIImage *dockImage;
+int blurType = 0;
 static UIImageView *dockImageView;

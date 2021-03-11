@@ -6,6 +6,7 @@ static void refreshPrefs() {
 	dockImage = [UIImage imageWithData:[bundleDefaults valueForKey:@"dockImage"]];
 	blurEnabled = [bundleDefaults objectForKey:@"isBlurEnabled"] ? [[bundleDefaults objectForKey:@"isBlurEnabled"]boolValue] : NO;
 	blurIntensity = [bundleDefaults objectForKey:@"blurAlpha"] ? [[bundleDefaults objectForKey:@"blurAlpha"]floatValue] : 1.0f;
+	blurType = [bundleDefaults objectForKey:@"blurType"] ? [[bundleDefaults objectForKey:@"blurType"]intValue] : 0;
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -23,7 +24,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
 		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
 		if(blurEnabled) {
-			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular]];
+			UIBlurEffect *validBlurs[3] = {[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular], [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark], [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]};
+			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:validBlurs[blurType]];
 			[blurEffectView setFrame: dockImageView.bounds];
 			[blurEffectView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 			[blurEffectView setContentMode:UIViewContentModeCenter];

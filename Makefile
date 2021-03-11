@@ -7,7 +7,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = PhotoDock
 
-PhotoDock_FILES = Tweak.x
+PhotoDock_FILES = Tweak.xm
 PhotoDock_CFLAGS = -fobjc-arc
 PhotoDock_LIBRARIES = imagepicker
 

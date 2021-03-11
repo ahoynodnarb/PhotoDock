@@ -61,6 +61,28 @@
 			<string>Enable Blur</string>
 		</dict>
 		<dict>
+            <key>cell</key>
+            <string>PSSegmentCell</string>
+            <key>defaults</key>
+            <string>com.popsicletreehouse.photodockprefs</string>
+            <key>default</key>
+            <string>0</string>
+            <key>key</key>
+            <string>blurType</string>
+            <key>validValues</key>
+            <array>
+                <string>0</string>
+                <string>1</string>
+                <string>2</string>
+            </array>
+            <key>validTitles</key>
+            <array>
+            	<string>Auto</string>
+                <string>Dark</string>
+                <string>Light</string>
+            </array>
+        </dict>
+		<dict>
 			<key>cell</key>
 			<string>PSSliderCell</string>
 			<key>default</key>
