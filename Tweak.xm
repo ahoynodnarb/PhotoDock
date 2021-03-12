@@ -14,26 +14,27 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 }
 
 %hook SBDockView
--(void)layoutSubviews {
+// called right after layoutsubiews
+-(void)drawRect:(CGRect)arg1 {
 	%orig;
 	if(isEnabled) {
-		[dockImageView removeFromSuperview];
-		dockImageView = [[UIImageView alloc] initWithImage:dockImage];
+		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: self.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[dockImageView setClipsToBounds: YES];
 		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
 		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
 		if(blurEnabled) {
-			UIBlurEffect *validBlurs[3] = {[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular], [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark], [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]};
-			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:validBlurs[blurType]];
+			int validBlurs[3] = {4, 2, 1};
+			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:(long)validBlurs[blurType]]];
 			[blurEffectView setFrame: dockImageView.bounds];
 			[blurEffectView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-			[blurEffectView setContentMode:UIViewContentModeCenter];
+			[blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
+			[blurEffectView setClipsToBounds: YES];
 			blurEffectView.alpha = blurIntensity;
 			[dockImageView addSubview: blurEffectView];
 		}
-		[self.backgroundView addSubview: dockImageView];
+		self.backgroundView = dockImageView;
 	}
 }
 %end
