@@ -14,10 +14,8 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 }
 
 %hook SBDockView
-// called right after layoutsubiews
--(void)drawRect:(CGRect)arg1 {
-	%orig;
-	if(isEnabled) {
+-(void)layoutSubviews {
+	if(isEnabled && dockImage) {
 		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: self.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -36,6 +34,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 		}
 		self.backgroundView = dockImageView;
 	}
+	%orig;
 }
 %end
 

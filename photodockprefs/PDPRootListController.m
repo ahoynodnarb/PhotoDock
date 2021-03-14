@@ -30,6 +30,9 @@
 -(void)openGithub {
 	[[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://github.com/PopsicleTreehouse/PhotoDock"] options:@{} completionHandler:nil];
 }
+-(void)openReddit {
+	[[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"https://reddit.com/u/popsicletreehouse"] options:@{} completionHandler:nil];
+}
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     UIBarButtonItem *applyButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring" style:UIBarButtonItemStylePlain target:self action:@selector(applyChanges)];
