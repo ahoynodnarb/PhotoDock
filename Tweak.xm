@@ -12,7 +12,7 @@ static void refreshPrefs() {
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     refreshPrefs();
 }
-
+%group iPhone
 %hook SBDockView
 -(void)layoutSubviews {
 	if(isEnabled && dockImage) {
@@ -37,8 +37,40 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 	%orig;
 }
 %end
+%end
+
+%group iPad
+%hook SBFloatingDockPlatterView
+-(void)layoutSubviews {
+	if(isEnabled && dockImage) {
+		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
+		[dockImageView setFrame: self.backgroundView.bounds];
+		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[dockImageView setClipsToBounds: YES];
+		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
+		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
+		if(blurEnabled) {
+			int validBlurs[3] = {4, 2, 1};
+			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:(long)validBlurs[blurType]]];
+			[blurEffectView setFrame: dockImageView.bounds];
+			[blurEffectView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+			[blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
+			[blurEffectView setClipsToBounds: YES];
+			blurEffectView.alpha = blurIntensity;
+			[dockImageView addSubview: blurEffectView];
+		}
+		self.backgroundView = dockImageView;
+	}
+	%orig;
+}
+%end
+%end
 
 %ctor {
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+		%init(iPad);
+	else
+		%init(iPhone);
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) PreferencesChangedCallback, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 	refreshPrefs();
 }
