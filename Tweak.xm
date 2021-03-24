@@ -1,5 +1,7 @@
 #import "PhotoDock.h"
 
+UIView *dockView;
+
 static void refreshPrefs() {
 	NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults]persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
 	isEnabled = [bundleDefaults objectForKey:@"isEnabled"] ? [[bundleDefaults objectForKey:@"isEnabled"]boolValue] : YES;
@@ -14,7 +16,7 @@ static void refreshPrefs() {
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     refreshPrefs();
 }
-static void setDockBGImage(UIView *dockView) {
+static void setDockBGImage() {
 	if(isEnabled && dockImage) {
 		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: dockView.backgroundView.bounds];
@@ -41,7 +43,9 @@ static void setDockBGImage(UIView *dockView) {
 %group iPhone
 %hook SBDockView
 -(void)layoutSubviews {
-	setDockBGImage(self);
+	dockView = self;
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+	setDockBGImage();
 	%orig;
 }
 %end
@@ -50,7 +54,9 @@ static void setDockBGImage(UIView *dockView) {
 %group iPad
 %hook SBFloatingDockPlatterView
 -(void)layoutSubviews {
-	setDockBGImage(self);
+	dockView = self;
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+	setDockBGImage();
 	%orig;
 }
 %end
