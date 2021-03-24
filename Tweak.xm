@@ -5,8 +5,10 @@ static void refreshPrefs() {
 	isEnabled = [bundleDefaults objectForKey:@"isEnabled"] ? [[bundleDefaults objectForKey:@"isEnabled"]boolValue] : YES;
 	dockImage = [UIImage imageWithData:[bundleDefaults valueForKey:@"dockImage"]];
 	blurEnabled = [bundleDefaults objectForKey:@"isBlurEnabled"] ? [[bundleDefaults objectForKey:@"isBlurEnabled"]boolValue] : NO;
-	blurIntensity = [bundleDefaults objectForKey:@"blurAlpha"] ? [[bundleDefaults objectForKey:@"blurAlpha"]floatValue] : 1.0f;
 	blurType = [bundleDefaults objectForKey:@"blurType"] ? [[bundleDefaults objectForKey:@"blurType"]intValue] : 0;
+	blurIntensity = [bundleDefaults objectForKey:@"blurAlpha"] ? [[bundleDefaults objectForKey:@"blurAlpha"]floatValue] : 1.0f;
+	customRadiusEnabled = [bundleDefaults objectForKey:@"customRadiusEnabled"] ? [[bundleDefaults objectForKey:@"customRadiusEnabled"]boolValue] : NO;
+	customRadius = [bundleDefaults objectForKey:@"customRadius"] ? [[bundleDefaults objectForKey:@"customRadius"]floatValue] : 35.0f;
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -31,6 +33,9 @@ static void setDockBGImage(UIView *dockView) {
 			[dockImageView addSubview: blurEffectView];
 		}
 		dockView.backgroundView = dockImageView;
+		if(customRadiusEnabled) {
+			dockImageView.layer.cornerRadius = customRadius;
+		}
 	}
 }
 %group iPhone

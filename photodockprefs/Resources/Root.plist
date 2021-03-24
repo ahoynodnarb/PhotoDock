@@ -21,6 +21,8 @@
 			<string>isEnabled</string>
 			<key>label</key>
 			<string>Enabled</string>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -41,6 +43,8 @@
 			<real>1</real>
 			<key>allowsVideos</key>
 			<false/>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -59,6 +63,8 @@
 			<string>isBlurEnabled</string>
 			<key>label</key>
 			<string>Enable Blur</string>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
 		</dict>
 		<dict>
             <key>cell</key>
@@ -81,6 +87,8 @@
                 <string>Dark</string>
                 <string>Light</string>
             </array>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
         </dict>
 		<dict>
 			<key>cell</key>
@@ -93,12 +101,52 @@
 			<string>blurAlpha</string>
 			<key>min</key>
 			<real>0</real>
-			<key>max></key>
+			<key>max</key>
 			<real>1</real>
 			<key>showValue</key>
 			<true/>
 			<key>label</key>
 			<string>Dock blur intensity</string>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Radius</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.popsicletreehouse.photodockprefs</string>
+			<key>key</key>
+			<string>customRadiusEnabled</string>
+			<key>label</key>
+			<string>Enable Custom Dock Radius</string>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<real>35</real>
+			<key>defaults</key>
+			<string>com.popsicletreehouse.photodockprefs</string>
+			<key>key</key>
+			<string>customRadius</string>
+			<key>min</key>
+			<real>0</real>
+			<key>max</key>
+			<real>100</real>
+			<key>showValue</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.popsicletreehouse.photodock.prefschanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>

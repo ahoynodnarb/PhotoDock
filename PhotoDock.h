@@ -9,7 +9,9 @@
 @interface SBFloatingDockPlatterView : UIView
 @end
 BOOL isEnabled = YES;
-BOOL blurEnabled = NO;
-float blurIntensity = 1.0f;
 UIImage *dockImage;
+BOOL blurEnabled = NO;
 int blurType = 0;
+float blurIntensity = 1.0f;
+BOOL customRadiusEnabled = NO;
+float customRadius = 35.0f; //default
