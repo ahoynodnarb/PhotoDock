@@ -2,12 +2,11 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 @interface UIView ()
 @property(assign, setter=_setCornerRadius:, nonatomic) double _cornerRadius;
+@property(nonatomic, retain) UIView *backgroundView;
 @end
 @interface SBDockView : UIView
-@property(nonatomic, retain) UIView *backgroundView;
 @end
 @interface SBFloatingDockPlatterView : UIView
-@property(nonatomic, retain) UIView *backgroundView;
 @end
 BOOL isEnabled = YES;
 BOOL blurEnabled = NO;

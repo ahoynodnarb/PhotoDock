@@ -12,15 +12,13 @@ static void refreshPrefs() {
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     refreshPrefs();
 }
-%group iPhone
-%hook SBDockView
--(void)layoutSubviews {
+static void setDockBGImage(UIView *dockView) {
 	if(isEnabled && dockImage) {
 		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
-		[dockImageView setFrame: self.backgroundView.bounds];
+		[dockImageView setFrame: dockView.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[dockImageView setClipsToBounds: YES];
-		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
+		dockImageView._cornerRadius = dockView.backgroundView._cornerRadius;
 		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
 		if(blurEnabled) {
 			int validBlurs[3] = {4, 2, 1};
@@ -32,8 +30,13 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 			blurEffectView.alpha = blurIntensity;
 			[dockImageView addSubview: blurEffectView];
 		}
-		self.backgroundView = dockImageView;
+		dockView.backgroundView = dockImageView;
 	}
+}
+%group iPhone
+%hook SBDockView
+-(void)layoutSubviews {
+	setDockBGImage(self);
 	%orig;
 }
 %end
@@ -42,25 +45,7 @@ static void PreferencesChangedCallback(CFNotificationCenterRef center, void *obs
 %group iPad
 %hook SBFloatingDockPlatterView
 -(void)layoutSubviews {
-	if(isEnabled && dockImage) {
-		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
-		[dockImageView setFrame: self.backgroundView.bounds];
-		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[dockImageView setClipsToBounds: YES];
-		dockImageView._cornerRadius = self.backgroundView._cornerRadius;
-		[dockImageView setContentMode:UIViewContentModeScaleAspectFill];
-		if(blurEnabled) {
-			int validBlurs[3] = {4, 2, 1};
-			UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:(long)validBlurs[blurType]]];
-			[blurEffectView setFrame: dockImageView.bounds];
-			[blurEffectView setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-			[blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
-			[blurEffectView setClipsToBounds: YES];
-			blurEffectView.alpha = blurIntensity;
-			[dockImageView addSubview: blurEffectView];
-		}
-		self.backgroundView = dockImageView;
-	}
+	setDockBGImage(self);
 	%orig;
 }
 %end
