@@ -5,10 +5,12 @@
 @interface UIView ()
 @property(assign, setter=_setCornerRadius:, nonatomic) double _cornerRadius;
 @property(nonatomic, retain) MTMaterialView *backgroundView;
+-(void)setDockBGImage;
 @end
 @interface SBDockView : UIView
 @end
-@interface SBFloatingDockPlatterView : UIView
+@interface SBFloatingDockView : UIView
+@property (nonatomic,readonly) double maximumDockContinuousCornerRadius;
 @end
 BOOL isEnabled = YES;
 UIImage *dockImage;
