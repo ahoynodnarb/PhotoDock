@@ -1,7 +1,5 @@
 #import "PhotoDock.h"
 
-UIView *dockView;
-
 static void refreshPrefs() {
 	NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults]persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
 	isEnabled = [bundleDefaults objectForKey:@"isEnabled"] ? [[bundleDefaults objectForKey:@"isEnabled"]boolValue] : YES;
@@ -16,9 +14,12 @@ static void refreshPrefs() {
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     refreshPrefs();
 }
-static void setDockBGImage() {
+void setDockBGImage() {
 	if(isEnabled && dockImage) {
-		UIImageView *dockImageView = [[UIImageView alloc] initWithImage:dockImage];
+		// UIView *dockView = %c(SBDockView) ?: %c(SBFloatingDockPlatterView);
+		NSLog(@"photodock dockView: %@", dockView);
+		[dockImageView removeFromSuperview];
+		dockImageView = [[UIImageView alloc] initWithImage:dockImage];
 		[dockImageView setFrame: dockView.backgroundView.bounds];
 		[dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[dockImageView setClipsToBounds: YES];
@@ -34,13 +35,12 @@ static void setDockBGImage() {
 			blurEffectView.alpha = blurIntensity;
 			[dockImageView addSubview: blurEffectView];
 		}
-		dockView.backgroundView = dockImageView;
 		if(customRadiusEnabled) {
 			dockImageView.layer.cornerRadius = customRadius;
 		}
+		[dockView.backgroundView addSubview: dockImageView];
 	}
 }
-%group iPhone
 %hook SBDockView
 -(void)layoutSubviews {
 	dockView = self;
@@ -49,9 +49,7 @@ static void setDockBGImage() {
 	%orig;
 }
 %end
-%end
 
-%group iPad
 %hook SBFloatingDockPlatterView
 -(void)layoutSubviews {
 	dockView = self;
@@ -60,13 +58,8 @@ static void setDockBGImage() {
 	%orig;
 }
 %end
-%end
 
 %ctor {
-	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-		%init(iPad);
-	else
-		%init(iPhone);
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) PreferencesChangedCallback, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 	refreshPrefs();
 }
