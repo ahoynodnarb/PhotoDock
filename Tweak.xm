@@ -45,7 +45,8 @@ static void setDockBGImage() {
 -(void)layoutSubviews {
 	dockView = self;
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-	setDockBGImage();
+	if(![dockImageView isDescendantOfView:self])
+		setDockBGImage();
 	%orig;
 }
 %end
@@ -55,7 +56,8 @@ static void setDockBGImage() {
 	self.backgroundView._cornerRadius = self.maximumDockContinuousCornerRadius; 
 	dockView = self;
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-	setDockBGImage();
+	if(![dockImageView isDescendantOfView:self])
+		setDockBGImage();
 	%orig;
 }
 %end
