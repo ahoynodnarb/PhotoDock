@@ -1,5 +1,4 @@
 #import "PhotoDock.h"
-#import <objc/runtime.h>
 
 static void refreshPrefs() {
 	NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults]persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
@@ -45,8 +44,9 @@ static void setDockBGImage() {
 -(void)layoutSubviews {
 	dockView = self;
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-	if(![dockImageView isDescendantOfView:self])
+	if(![dockImageView isDescendantOfView:self]) {
 		setDockBGImage();
+	}
 	%orig;
 }
 %end
@@ -56,8 +56,9 @@ static void setDockBGImage() {
 	self.backgroundView._cornerRadius = self.maximumDockContinuousCornerRadius; 
 	dockView = self;
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) setDockBGImage, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-	if(![dockImageView isDescendantOfView:self])
+	if(![dockImageView isDescendantOfView:self]) {
 		setDockBGImage();
+	}
 	%orig;
 }
 %end
