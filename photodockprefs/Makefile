@@ -1,5 +1,3 @@
-export PREFIX=$(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
-
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = PhotoDockPrefs

@@ -1,4 +1,4 @@
-PREFIX=$(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
+TARGET := iphone:clang:14.4
 
 INSTALL_TARGET_PROCESSES = SpringBoard
 
