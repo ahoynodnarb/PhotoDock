@@ -1,6 +1,6 @@
 #import "PhotoDock.h"
 
-void refreshPrefs() {
+static void refreshPrefs() {
     NSDictionary *bundleDefaults = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.popsicletreehouse.photodockprefs"];
     isEnabled = [bundleDefaults objectForKey:@"isEnabled"] ? [[bundleDefaults objectForKey:@"isEnabled"] boolValue] : YES;
     dockImage = [UIImage imageWithData:[bundleDefaults valueForKey:@"dockImage"]];
@@ -12,19 +12,15 @@ void refreshPrefs() {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"updateBackgroundView" object:nil];
 }
 
-void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-    refreshPrefs();
-}
-
 %hook SBDockView
 %property (nonatomic, strong) UIImageView *dockImageView;
 %new
-- (void)updateBackgroundView:(UIView *)backgroundView {
+- (void)updateBackgroundView {
     if (isEnabled && dockImage) {
-        [backgroundView setClipsToBounds:YES];
         [self.dockImageView removeFromSuperview];
         self.dockImageView = [[UIImageView alloc] initWithImage:dockImage];
-        self.dockImageView.frame = backgroundView.bounds;
+        self.dockImageView.frame = self.backgroundView.bounds;
+        [self.dockImageView setClipsToBounds:YES];
         [self.dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
         [self.dockImageView setContentMode:UIViewContentModeScaleAspectFill];
         if (blurEnabled) {
@@ -33,24 +29,27 @@ void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, 
             [blurEffectView setFrame:self.dockImageView.bounds];
             [blurEffectView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
             [blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
-            [blurEffectView setClipsToBounds:YES];
             blurEffectView.alpha = blurIntensity;
             [self.dockImageView addSubview:blurEffectView];
         }
-        if (customRadiusEnabled) [backgroundView.layer setCornerRadius:customRadius];
-        else [backgroundView.layer setCornerRadius:34.5f];
-        [backgroundView addSubview:self.dockImageView];
+        if (customRadiusEnabled) {
+            [self.backgroundView.layer setCornerRadius:customRadius];
+            [self.dockImageView.layer setCornerRadius:customRadius];
+        }
+        else {
+            [self.backgroundView.layer setCornerRadius:34.5f];
+            [self.dockImageView.layer setCornerRadius:34.5f];
+        }
+        [self.backgroundView addSubview:self.dockImageView];
     }
 }
-- (UIView *)backgroundView {
-    [self updateBackgroundView:%orig];
-    return %orig;
+- (void)layoutSubviews {
+    %orig;
+    [self updateBackgroundView];
 }
 - (id)initWithDockListView:(id)arg1 forSnapshot:(BOOL)arg2 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"updateBackgroundView" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notification){
-        [self updateBackgroundView:self.backgroundView];
-    }];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateBackgroundView) name:@"updateBackgroundView" object:nil];
     return %orig;
 }
 %end
@@ -58,12 +57,12 @@ void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, 
 %hook SBFloatingDockView
 %property (nonatomic, strong) UIImageView *dockImageView;
 %new
-- (void)updateBackgroundView:(UIView *)backgroundView {
+- (void)updateBackgroundView {
     if (isEnabled && dockImage) {
-        [backgroundView setClipsToBounds:YES];
         [self.dockImageView removeFromSuperview];
         self.dockImageView = [[UIImageView alloc] initWithImage:dockImage];
-        self.dockImageView.frame = backgroundView.bounds;
+        self.dockImageView.frame = self.backgroundView.bounds;
+        [self.dockImageView setClipsToBounds:YES];
         [self.dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
         [self.dockImageView setContentMode:UIViewContentModeScaleAspectFill];
         if (blurEnabled) {
@@ -72,34 +71,32 @@ void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, 
             [blurEffectView setFrame:self.dockImageView.bounds];
             [blurEffectView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
             [blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
-            [blurEffectView setClipsToBounds:YES];
             blurEffectView.alpha = blurIntensity;
             [self.dockImageView addSubview:blurEffectView];
         }
-        if (customRadiusEnabled) [backgroundView.layer setCornerRadius:customRadius];
-        else [backgroundView.layer setCornerRadius:34.5f];
-        [backgroundView addSubview:self.dockImageView];
+        if (customRadiusEnabled) {
+            [self.backgroundView.layer setCornerRadius:customRadius];
+            [self.dockImageView.layer setCornerRadius:customRadius];
+        }
+        else {
+            [self.backgroundView.layer setCornerRadius:34.5f];
+            [self.dockImageView.layer setCornerRadius:34.5f];
+        }
+        [self.backgroundView addSubview:self.dockImageView];
     }
-}
-- (UIView *)backgroundView {
-    [self updateBackgroundView:%orig];
-    return %orig;
 }
 - (void)layoutSubviews {
     %orig;
-    [self updateBackgroundView:self.backgroundView];
+    [self updateBackgroundView];
 }
 - (id)initWithFrame:(CGRect)arg1 {
-    [self updateBackgroundView:self.backgroundView];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"updateBackgroundView" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notification){
-        [self updateBackgroundView:self.backgroundView];
-    }];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateBackgroundView) name:@"updateBackgroundView" object:nil];
     return %orig;
 }
 %end
 
 %ctor {
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) PreferencesChangedCallback, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback) refreshPrefs, CFSTR("com.popsicletreehouse.photodock.prefschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 	refreshPrefs();
 }

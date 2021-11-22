@@ -1,12 +1,12 @@
 @interface SBDockView : UIView
 @property (nonatomic, strong) UIImageView *dockImageView;
-@property(nonatomic, retain) UIView *backgroundView;
-- (void)updateBackgroundView:(UIView *)backgroundView;
+@property (nonatomic, strong) UIView *backgroundView;
+- (void)updateBackgroundView;
 @end
 @interface SBFloatingDockView : UIView
 @property (nonatomic, strong) UIImageView *dockImageView;
-@property(nonatomic, retain) UIView *backgroundView;
-- (void)updateBackgroundView:(UIView *)backgroundView;
+@property (nonatomic, strong) UIView *backgroundView;
+- (void)updateBackgroundView;
 @end
 BOOL isEnabled;
 UIImage *dockImage;
