@@ -14,42 +14,54 @@ static void refreshPrefs() {
 
 %hook SBDockView
 %property (nonatomic, strong) UIImageView *dockImageView;
+%property (nonatomic, strong) UIVisualEffectView *blurEffectView;
 %new
 - (void)updateBackgroundView {
     if (isEnabled && dockImage) {
-        [self.dockImageView removeFromSuperview];
-        self.dockImageView = [[UIImageView alloc] initWithImage:dockImage];
+        if(!self.dockImageView) {
+            self.dockImageView = [[UIImageView alloc] init];
+            self.dockImageView.clipsToBounds = YES;
+            self.dockImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            self.dockImageView.contentMode = UIViewContentModeScaleAspectFill;
+            [self.backgroundView addSubview:self.dockImageView];
+        }
         self.dockImageView.frame = self.backgroundView.bounds;
-        [self.dockImageView setClipsToBounds:YES];
-        [self.dockImageView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-        [self.dockImageView setContentMode:UIViewContentModeScaleAspectFill];
         if (blurEnabled) {
-            long validBlurs[3] = {4, 2, 1};
-            UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:validBlurs[blurType]]];
-            [blurEffectView setFrame:self.dockImageView.bounds];
-            [blurEffectView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-            [blurEffectView setContentMode:UIViewContentModeScaleAspectFill];
-            blurEffectView.alpha = blurIntensity;
-            [self.dockImageView addSubview:blurEffectView];
+            if(!self.blurEffectView) {
+                self.blurEffectView = [[UIVisualEffectView alloc] init];
+                self.blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                self.blurEffectView.contentMode = UIViewContentModeScaleAspectFill;
+                [self.dockImageView addSubview:self.blurEffectView];
+            }
+            self.blurEffectView.frame = self.dockImageView.bounds;
         }
-        if (customRadiusEnabled) {
-            [self.backgroundView.layer setCornerRadius:customRadius];
-            [self.dockImageView.layer setCornerRadius:customRadius];
-        }
-        else {
-            [self.backgroundView.layer setCornerRadius:34.5f];
-            [self.dockImageView.layer setCornerRadius:34.5f];
-        }
-        [self.backgroundView addSubview:self.dockImageView];
+        [self updateDockImageView];
     }
 }
+%new
+- (void)updateDockImageView {
+    self.dockImageView.image = dockImage;
+    self.backgroundView.layer.cornerRadius = customRadiusEnabled ? customRadius : 34.5f;
+    self.dockImageView.layer.cornerRadius = customRadiusEnabled ? customRadius : 34.5f;
+    if(self.blurEffectView) {
+        if(!blurEnabled) {
+            [self.blurEffectView removeFromSuperview];
+            self.blurEffectView = nil;
+            return;
+        }
+        long validBlurs[3] = {4, 2, 1};
+        self.blurEffectView.alpha = blurIntensity;
+        self.blurEffectView.effect = [UIBlurEffect effectWithStyle:validBlurs[blurType]];
+    }
+    else if (blurEnabled) [self updateBackgroundView];
+} 
 - (void)layoutSubviews {
     %orig;
     [self updateBackgroundView];
 }
 - (id)initWithDockListView:(id)arg1 forSnapshot:(BOOL)arg2 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateBackgroundView) name:@"updateBackgroundView" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDockImageView) name:@"updateBackgroundView" object:nil];
     return %orig;
 }
 %end
